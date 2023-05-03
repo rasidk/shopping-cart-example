@@ -29,12 +29,13 @@ class UserType extends AbstractType
             ->add('lastName', TextType::class, [
                 'attr' => ['class' => 'form-control'],
                 'label_attr' => ['class' => 'form-label'],
-                // 'required' => false,
+                'required' => false,
 
             ])
             ->add('plainPassword', PasswordType::class, [
                 // instead of being set onto the object directly,
                 // this is read and encoded in the controller
+                'label' =>'Password',
                 'required' => false,
                 'mapped' => false,
                 'attr' => [

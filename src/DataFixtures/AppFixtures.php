@@ -24,6 +24,7 @@ class AppFixtures extends Fixture
         $user = new User();
         $user->setEmail('admin@example.com');
         $user->setFirstName('Admin');
+        $user->setLastName('A');
         $user->setRoles(["ROLE_ADMIN"]);
         $newEncodedPassword = $this->passwordEncoder->encodePassword($user,  '123456');
         $user->setPassword($newEncodedPassword);
@@ -34,6 +35,7 @@ class AppFixtures extends Fixture
          $user = new User();
          $user->setEmail('user@example.com');
          $user->setFirstName('User');
+         $user->setLastName('U');
          $user->setRoles([]);
          $user->setCredits(1000);
          $newEncodedPassword = $this->passwordEncoder->encodePassword($user,  '123456');

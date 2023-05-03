@@ -1,0 +1,21 @@
+
+{% extends 'base.html.twig' %}
+{% block body %}
+ 
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="text-center my-5">
+        <h1 class="display-4 text-muted">Success!</h1>
+        <p class="lead">You have been successfully placed order.</p>
+        <a href="{{ path('app_home') }}" class="btn btn-primary mt-3">Continue Shopping</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+{% endblock %}

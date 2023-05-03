@@ -1,0 +1,96 @@
+
+{% extends 'base.html.twig' %}
+{% block body %}
+ 
+
+ 
+        <div class="container">
+    
+
+<div class="row">
+  {% for product in products %}
+    <div class="col-lg-3 col-md-6 mb-4">
+      <div class="card h-100">
+        <a href="#"><img class="card-img-top" src="{{ asset('images/product.png') }}" alt=""></a>
+        <div class="card-body">
+          <h4 class="card-title">
+            <a href="#">{{product.productName}}</a>
+          </h4>
+          <h5 class="card-price">${{product.price}}</h5>
+          <p class="card-text">{{product.description}}</p>
+
+          <div class="form-group">
+           <label for="size-{{product.id}}">Size:</label>
+            <select name="size-{{product.id}}" id="size-{{product.id}}" class="form-control">
+              {% for size in product.sizes %}
+                  <option value="{{ size }}">{{ size }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="card-footer">
+
+          {% if app.session.get('cart') is defined and app.session.get('cart')[product.id] is defined %}
+            <button class="btn col-lg-12 btn-primary" disabled="disabled">Added</button>
+
+        {% else %}
+
+            <button class="btn col-lg-12 btn-primary" id="add-to-cart" onClick="addToCart('{{product.id}}', document.getElementById('size-{{product.id}}').value)">Add to Cart</button>
+
+        {% endif %}
+        </div>
+      </div>
+    </div>
+  {% else %}
+
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="text-center my-5">
+        <h1 class="display-4 text-muted">Sorry!</h1>
+        <p class="lead">No Products Found.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+  {% endfor %}
+     
+  
+
+    </div>    </div>
+
+
+<script>
+
+
+function addToCart(productId,size){
+
+    var cartCount= parseInt($('#total-cart-count').val()) +1
+    var button = event.target;
+    $.ajax({
+        type: "POST",
+        url: "{{ path ('add_to_cart') }}",
+        data: {
+          productId:productId,
+          size:size,
+          qty:1
+        },
+        enctype: 'multipart/form-data',
+        success: function (result) {
+            $('#total-cart-count').val(cartCount)
+            button.innerHTML = 'Added';
+            button.disabled = true;
+            $('#cart-count').html('('+cartCount+')');
+        }
+        
+    });
+  
+}
+
+
+
+</script>
+
+{% endblock %}

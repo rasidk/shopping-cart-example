@@ -1,0 +1,20 @@
+{% extends 'user_base.html.twig' %}
+
+{% block title %}New Product{% endblock %}
+
+{% block body %}
+ <div class="card">
+            <div class="card-body">
+              <h5 class="card-title fw-semibold mb-4">Create new Product</h5>
+              <div class="card">
+                <div class="card-body">
+
+    {{ include('product/_form.html.twig') }}
+
+
+    </div>
+    </div>
+    </div>
+        </div>
+
+{% endblock %}

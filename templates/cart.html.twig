@@ -1,0 +1,197 @@
+
+{% extends 'base.html.twig' %}
+{% block body %}
+ 
+
+{% if cartCount> 0 %}
+
+
+<div class="container">
+  <h2>Shopping Cart</h2>
+  <div class="row">
+    <div class="col-md-8">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Size</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+
+        {% for product in products %}
+          <tr id="cart-{{product.id}}">
+            <td>
+              <div class="row">
+                <div class="col-md-3">
+                  <img src="{{ asset('images/product.png') }}" alt="product1" class="img-fluid">
+                </div>
+                <div class="col-md-9">
+                  <h4>{{product.productName}}</h4>
+                  <p>{{product.description}}</p>
+                </div>
+              </div>
+            </td>
+            <td>{{product.size}}</td>
+            <td>${{product.price}}</td>
+            <td>
+            
+
+          
+<select onchange="updateCart('{{product.id}}','{{product.size}}',this.value,'{{product.price}}');" style="width: 50px;">
+    {% for i in 1..20 %}
+        <option value="{{ i }}" {% if i == product.qty %}selected{% endif %}>{{ i }}</option>
+    {% endfor %}
+</select>            </td>
+            <td id="total-price-{{product.id}}">${{product.total}}</td>
+            <td>
+              <button type="button" class="btn btn-sm btn-danger" onClick="removeCartItem('{{product.id}}');">Delete</button>
+            </td>
+          </tr>
+
+          {% endfor %}
+        
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">Order Summary</h4>
+          <table class="table">
+            <tbody>
+              <tr>
+                <td>Subtotal</td>
+                <td id="total-amount">${{totalAmount}}</td>
+              </tr>
+              {% if app.user %}
+
+                <td>Available Credits</td>
+                  <td >${{ app.user.credits }}</td>
+              </tr>
+
+                <tr>
+                        <td colspan="2">
+                                       {% if not is_granted('ROLE_ADMIN') %}
+
+              <button type="button" class="btn col-lg-12 btn-success btn-block" onClick="placeOrder();">Checkout</button>
+                                              <p style="color:red;display:none" id="error-msg"></p>
+                                              {% else %}
+                                                <p style="color:red;" > For placing order please login as User</p>
+
+                                              {% endif %}
+            </td>
+
+            {% else %}
+               <tr>
+                        <td colspan="2">
+              <a href="{{path ('app_login')}}" class="btn col-lg-12 btn-success btn-block">Login to checkout</button>
+            </td>
+{% endif %}
+
+
+
+                </tr>
+                        </tbody>
+      </table>
+          </div>
+    </div>
+
+
+
+{% else %}
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="text-center my-5">
+        <h1 class="display-4 text-muted">Your cart is empty</h1>
+        <p class="lead">Please add some products to your cart before checkout.</p>
+        <a href="{{ path('app_home') }}" class="btn btn-primary mt-3">Continue Shopping</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+<script>
+
+
+function updateCart(productId,size,qty,price){
+    var cartCount= parseInt($('#total-cart-count').val()) +1
+    $.ajax({
+        type: "POST",
+        url: "{{ path ('update_cart') }}",
+        data: {
+          productId:productId,
+          size:size,
+          qty:qty
+        },
+        enctype: 'multipart/form-data',
+        success: function (result) {
+            totalPrice= qty * price;
+            $('#total-price-'+productId).html('$'+totalPrice);
+            $('#total-amount').html('$'+result.totalAmount)
+
+        }
+        
+    });
+  
+}
+
+
+function removeCartItem(productId){
+      var cartCount= parseInt($('#total-cart-count').val()) -1
+      if(cartCount==0){
+        window.location.href = "{{ path ('cart') }}";
+      }
+    $.ajax({
+        type: "GET",
+        url: "{{ path ('remove_cart_item') }}",
+        data: {
+          productId:productId,
+        },
+        enctype: 'multipart/form-data',
+        success: function (result) {
+            $('#cart-'+productId).remove();
+            $('#total-cart-count').val(cartCount)
+            $('#cart-count').html('('+cartCount+')');
+            $('#total-amount').html('$'+result.totalAmount)
+
+        }
+        
+    });
+  
+}
+
+function placeOrder(productId){
+    var button = event.target;
+   
+      $.ajax({
+        type: "GET",
+        url: "{{ path ('place_order') }}",
+         beforeSend: function() {
+          button.innerHTML = 'Processing';
+          button.disabled = true;
+        },
+        success: function (result) {
+          if(result.status=='success'){
+            window.location.href = "{{ path ('order_success') }}";
+          }else{
+            $('#error-msg').text(result.message).show();
+          }
+          button.innerHTML = 'Checkout';
+          button.disabled = false;
+        }
+        
+    });
+ 
+  
+}
+</script>
+
+
+{% endblock %}

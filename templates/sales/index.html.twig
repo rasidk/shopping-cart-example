@@ -16,7 +16,9 @@
                     <thead class="text-dark fs-4">
             <tr>
                 <th>Id</th>
+        {% if is_granted('ROLE_ADMIN') %}
                 <th>User </th>
+                {% endif %}
                 <th>TotalAmount</th>
                 <th>CreatedAt</th>
                 <th>Actions</th>
@@ -26,7 +28,9 @@
         {% for sale in sales %}
             <tr>
                 <td>{{ sale.id }}</td>
+       {% if is_granted('ROLE_ADMIN') %}
                 <td>{{ sale.user.firstName }}</td>
+                {% endif %}
                 <td>${{ sale.totalAmount }}</td>
                 <td>{{ sale.createdAt ? sale.createdAt|date('Y-m-d H:i:s') : '' }}</td>
 
